@@ -1,0 +1,73 @@
+#include <stdio.h>
+
+#define INF 999
+
+int cost[10][10], parent[10];
+int n; // Number of vertices
+
+// Function to find the root of a vertex (used in union-find)
+int find(int i) {
+    while (parent[i] != i)
+        i = parent[i];
+    return i;
+}
+
+// Function to join two sets (union)
+void unionSets(int i, int j) {
+    int root_i = find(i);
+    int root_j = find(j);
+    parent[root_i] = root_j;
+}
+
+void kruskal() {
+    int edges = 0, totalCost = 0;
+
+    // Initialize each vertex's parent to itself
+    for (int i = 0; i < n; i++)
+        parent[i] = i;
+
+    printf("Edges in the Minimum Spanning Tree:\n");
+
+    while (edges < n - 1) {
+        int min = INF, u = -1, v = -1;
+
+        // Find the edge with the minimum cost
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j && cost[i][j] < min && find(i) != find(j)) {
+                    min = cost[i][j];
+                    u = i;
+                    v = j;
+                }
+            }
+        }
+
+        if (u != -1 && v != -1) {
+            unionSets(u, v);
+            printf("(%d, %d) -> cost = %d\n", u, v, min);
+            totalCost += min;
+            edges++;
+
+            // Mark edge as used
+            cost[u][v] = cost[v][u] = INF;
+        } else {
+            break; // No valid edge found
+        }
+    }
+
+    printf("Total cost of the Minimum Spanning Tree: %d\n", totalCost);
+}
+
+int main() {
+    printf("Enter the number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter the cost adjacency matrix (999 for no edge):\n");
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &cost[i][j]);
+
+    kruskal();
+
+    return 0;
+}
